@@ -7,6 +7,7 @@ import java.util.List;
 import org.openapitools.openapidiff.core.OpenApiCompare;
 import org.openapitools.openapidiff.core.model.ChangedOpenApi;
 import org.openapitools.openapidiff.core.output.JsonRender;
+import org.openapitools.openapidiff.core.output.MarkdownRender;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,6 +27,7 @@ public class Controller {
     @PostMapping("/diff")
     public String Diff(@RequestParam(value = "source") String source, 
                         @RequestParam(value = "target") String target,
+                        @RequestParam(value = "diff-return-type", defaultValue = "JSON") String diffReturnType,
                         @RequestParam(value = "source-auth-key", defaultValue = "") String sourceAuthKey,
                         @RequestParam(value = "source-auth-value", defaultValue = "") String sourceAuthValue,
                         @RequestParam(value = "source-auth-type", defaultValue = "") String sourceAuthType,
@@ -41,7 +43,10 @@ public class Controller {
         
         ChangedOpenApi diffResult = OpenApiCompare.fromLocations(source, target,authList);
 
-        return new JsonRender().render(diffResult);
+        if(diffReturnType.equals("MD"))
+            return new MarkdownRender().render(diffResult);
+        else
+            return new JsonRender().render(diffResult);
     }
 
 }
